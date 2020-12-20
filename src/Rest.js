@@ -1,4 +1,4 @@
-export const baseurl = window.location.href.includes("localhost")?`http://localhost:3010`:'https://api.avatarcloud.requi.dev';
+export const baseurl = window.location.href.includes("localhost")?`http://localhost:3010`:'https://api.vault.requi.dev';
 
 
 function getCategories(){
@@ -21,8 +21,16 @@ function searchObjects(category,tags,page,limit) {
     return (url);
 }
 
-function checkPass() {
-    return `${baseurl}/v1/upload/checkPass`
+function canUpload() {
+    return `${baseurl}/v1/upload/canUpload`
 }
 
-export default {getCategories,getTags,searchObjects,checkPass,baseurl}
+function login() {
+    return `${baseurl}/v1/user/login`
+}
+
+function register() {
+    return `${baseurl}/v1/user/create`
+}
+
+export default {getCategories,getTags,searchObjects,canUpload,baseurl}
