@@ -5,12 +5,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import TagSearchBar from "../../components/TagSearchBar";
 import {Redirect} from 'react-router-dom';
 import Rest from "../../Rest";
+import useFetch from "fetch-suspense";
 import CategorySelector from "../../components/CategorySelector";
 
 import "./Search.css";
 
 function SearchResults(props) {
-    let search = Rest.searchObjects(props.category,props.tags);
+    let search = useFetch(Rest.searchObjects(props.category,props.tags));
 
     return <>
         <p style={{textAlign:"right", marginRight: "20px"}}>Results: {search.length}</p>
@@ -30,7 +31,6 @@ function SearchResult(props) {
 }
 
 function updateValues(t,c,l) {
-    console.log(c)
     let search = "?"
 
     if (t.length>=1) {
@@ -56,7 +56,7 @@ export default function Search() {
         <Suspense fallback={<CircularProgress/>}>
             <div id="searchBar">
                 <div id="selector">
-                    <CategorySelector value={category} onChange={(e)=>{updatePath(updateValues(tags,e.target.value,location))}}/>
+                    <CategorySelector value={category} onChange={(e,v)=>{updatePath(updateValues(tags,v,location))}}/>
                 </div>
                 <div id="tags">
                     <TagSearchBar value={tags} onChange={(e,v)=>{updatePath(updateValues(v,category,location))}}/>

@@ -6,14 +6,14 @@
 #selector {
     display: flex;
     align-items: center;
-    width: calc(10vw - 20px);
-    margin: 10px;
+    width: calc(20vw - 60px);
+    margin: 10px 10px 10px 20px;
 }
 
 #tags {
     display: inline-block;
     width: 80vw;
-    margin: 10px;
+    margin: 10px 20px 10px 10px;
 }
 
 .searchRes {
