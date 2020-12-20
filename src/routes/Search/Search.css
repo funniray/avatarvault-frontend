@@ -1,0 +1,49 @@
+#searchBar {
+    margin-top: 10px;
+    display: inline-flex;
+}
+
+#selector {
+    display: flex;
+    align-items: center;
+    width: calc(10vw - 20px);
+    margin: 10px;
+}
+
+#tags {
+    display: inline-block;
+    width: 80vw;
+    margin: 10px;
+}
+
+.searchRes {
+    height: 150px;
+    border-bottom: 1px solid lightgray;
+    margin: 20px;
+    text-align: left;
+    display: block;
+    color: black;
+}
+
+.searchImg {
+    height: 120px;
+    width: 120px;
+    margin: 10px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.tag {
+    display: inline-block;
+    margin-left: 5px;
+    border: 1px solid rgb(224,224,224);
+    background-color: rgb(224,224,224);
+    border-radius: 16px;
+    padding: 2px 8px 2px 8px;
+    font-size: 13px;
+}
+
+.searchRes > * {
+    display: inline-block;
+    vertical-align: middle;
+}
