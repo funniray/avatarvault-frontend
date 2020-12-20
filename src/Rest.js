@@ -25,6 +25,10 @@ function canUpload() {
     return `${baseurl}/v1/upload/canUpload`
 }
 
+function checkPass() {
+    return `${baseurl}/v1/upload/checkPass`
+}
+
 function login() {
     return `${baseurl}/v1/user/login`
 }
@@ -33,4 +37,4 @@ function register() {
     return `${baseurl}/v1/user/create`
 }
 
-export default {getCategories,getTags,searchObjects,canUpload,baseurl}
+export default {getCategories,getTags,searchObjects,canUpload,checkPass,baseurl}
