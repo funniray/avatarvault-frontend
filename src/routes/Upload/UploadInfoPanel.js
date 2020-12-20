@@ -15,29 +15,33 @@ let fileTypes = {
     previews: ['png','jpg','jpeg','mp4','webm','gif']
 }
 
-const useStyles = makeStyles((theme) =>({
-    catSelector: {
-        width: 'calc(20vw - 80px)',
-        display: 'inline-flex',
-        alignItems: 'middle',
-        margin: "10px 10px 10px 20px"
-    },
-    tagSelector: {
-        width: '70vw',
-        display: 'inline-block',
-        margin: "10px 20px 10px 10px"
-    },
-    dropZone: {
-        width: '50%',
-        height: '10vh',
-        border: '1px solid rgb(224,224,224)',
-        marginLeft: 'auto',
-        marginRight: 'auto'
-    },
-    border: {
-        border: "1px solid black"
+const useStyles = makeStyles((theme) =>{
+    //Why didn't they just use a palette thing?
+    const borderColor = theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)';
+    return{
+        catSelector: {
+            width: 'calc(20% - 80px)',
+            display: 'inline-flex',
+            alignItems: 'middle',
+            margin: "10px 10px 10px 20px"
+        },
+        tagSelector: {
+            width: '70%',
+            display: 'inline-block',
+            margin: "10px 20px 10px 10px"
+        },
+        dropZone: {
+            width: '50%',
+            height: '10vh',
+            border: '1px solid '+borderColor,
+            marginLeft: 'auto',
+            marginRight: 'auto'
+        },
+        border: {
+            border: "1px solid "+borderColor
+        }
     }
-}));
+});
 
 function dropHandler(e,currentFiles) {
     console.log('got files')
@@ -191,7 +195,7 @@ export default function UploadInfoPanel(props) {
                 <br/>
                 <br/>
                 <p>These files will be uploaded...</p>
-                <table style={{margin:"auto",border:"1px solid black"}}>
+                <table className={classes.border} style={{margin:"auto"}}>
                     <thead>
                         <tr className={classes.border}>
                             <th className={classes.border}>File</th>

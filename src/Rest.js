@@ -1,4 +1,4 @@
-export const baseurl = window.location.contains("localhost")?`http://localhost:3010`:'https://api.avatarcloud.requi.dev';
+export const baseurl = window.location.href.includes("localhost")?`http://localhost:3010`:'https://api.avatarcloud.requi.dev';
 
 
 function getCategories(){
