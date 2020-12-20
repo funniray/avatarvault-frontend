@@ -10,15 +10,14 @@ const useStyles = makeStyles({
 });
 
 function UploadPane(props) {
-    console.log("renderPane")
     const classes = useStyles();
     const [progress, setProgress] = React.useState(0);
     const [addedListener, setAddedListener] = React.useState(false);
     if (!props.file.finished&&!addedListener) {
         setAddedListener(true);
         props.file.addEventListener(e => {
-            setProgress(Math.round((100 * e.loaded) / e.total));
-            console.log("update");
+            let prog = Math.round((100 * e.loaded) / e.total);
+            setProgress(prog);
         })
     } else if (props.file.finished) {
         if (progress!==100)
@@ -34,6 +33,5 @@ function UploadPane(props) {
 }
 
 export default function UploadingPanel(props) {
-    console.log("render");
     return <>{props.files.map(file=><UploadPane key={file.name} file={file}/>)}</>
 }

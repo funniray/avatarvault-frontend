@@ -96,7 +96,7 @@ export default function Upload() {
                     <UploadingPanel files={files}/>
                 </TabPanel>
                 <TabPanel value={value} index={1} dir={theme.direction}>
-                    <UploadInfoPanel files={files} setUploadingFiles={setFiles}/>
+                    <UploadInfoPanel password={password} files={files} setUploadingFiles={setFiles}/>
                 </TabPanel>
             </SwipeableViews>
         </div>

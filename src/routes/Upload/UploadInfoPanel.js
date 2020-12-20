@@ -11,7 +11,7 @@ let queue = [];
 let isQueueRunning = false;
 
 let fileTypes = {
-    files: ['rar','zip','7z','unitypackage','exe'],
+    files: ['rar','zip','7z','unitypackage','exe','gz','vrca'],
     previews: ['png','jpg','jpeg','mp4','webm','gif']
 }
 
@@ -97,17 +97,20 @@ class ObjectUpload {
     name;
     finished = false;
     downloading = false;
+    progress = 0;
 
-    constructor(file,preview,tags,category) {
+    constructor(file,preview,tags,category,password) {
         this.name=file.name;
         this.formData = new FormData();
         this.formData.append('file',file);
         this.formData.append('tags',JSON.stringify(tags));
         this.formData.append('category',category);
+        this.formData.append('password',password)
         if (preview) this.formData.append('preview',preview);
     }
 
     addEventListener(listener) {
+        listener({loaded:this.progress,total:100});
         this.listeners.push(listener);
     }
 
@@ -116,27 +119,27 @@ class ObjectUpload {
     }
 
     callListeners(e){
-        if (this.listeners)
-            this.listeners.forEach((l)=>l(e))
+        this.progress = Math.round((100 * e.loaded) / e.total);
+        this.listeners.forEach((l)=>l(e))
     }
 
     uploadFile() {
         this.downloading = true;
         let a = axios.create({baseURL:baseurl});
-        this.upload = a.post(`/v1/upload`,this.formData, {headers:{"Content-Type": "multipart/form-data"}, onUploadProgress: this.callListeners});
-        this.upload.then(this.finishedListener.forEach(l=>l())).then(this.finished=true);
+        this.upload = a.post(`/v1/upload`,this.formData, {headers:{"Content-Type": "multipart/form-data"}, onUploadProgress: (e)=> this.callListeners(e)});
+        this.upload.then(this.finishedListener.forEach(l=>l()));
         return this.upload;
     }
 }
 
-function upload(c,t,files) {
-    return new ObjectUpload(files.file,files.preview,t,c)
+function upload(c,t,files,p) {
+    return new ObjectUpload(files.file,files.preview,t,c,p)
 }
 
-function uploadAll(files,c,t,uploading,setFiles) {
+function uploadAll(files,c,t,uploading,setFiles,p) {
     for (let fileName in files) {
         let file = files[fileName];
-        const u = upload(c,t,file);
+        const u = upload(c,t,file,p);
         uploading.push(u);
         queue.push(u);
     }
@@ -144,18 +147,22 @@ function uploadAll(files,c,t,uploading,setFiles) {
 
     if (!isQueueRunning) {
         isQueueRunning = true;
-        doNextInQueue();
+        for (let i=0;i<3;i++) {
+            doNextInQueue();
+        }
     }
 }
 
 async function doNextInQueue() {
-    await queue[0].uploadFile();
-    queue.shift();
-    if (queue.length>0) {
-        doNextInQueue();
-    } else {
+    if (!queue[0]) {
         isQueueRunning = false;
+        console.log(queue);
+        return;
     }
+    let file = queue[0];
+    queue.shift();
+    await file.uploadFile();
+    await doNextInQueue();
 }
 
 export default function UploadInfoPanel(props) {
@@ -205,7 +212,7 @@ export default function UploadInfoPanel(props) {
                     <tbody>{grid}</tbody>
                 </table>
                 <Button onClick={()=>setFiles([])}>Clear</Button>
-                <Button onClick={()=>uploadAll(sorted,category,tags,props.files,props.setUploadingFiles)}>Upload All Files</Button>
+                <Button onClick={()=>uploadAll(sorted,category,tags,props.files,props.setUploadingFiles,props.password)}>Upload All Files</Button>
             </div>
         </Suspense>)
 }
