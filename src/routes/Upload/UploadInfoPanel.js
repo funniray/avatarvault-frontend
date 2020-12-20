@@ -17,7 +17,7 @@ let fileTypes = {
 
 const useStyles = makeStyles((theme) =>{
     //Why didn't they just use a palette thing?
-    const borderColor = theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)';
+    const borderColor = theme.palette.type === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)';
     return{
         catSelector: {
             width: 'calc(20% - 80px)',

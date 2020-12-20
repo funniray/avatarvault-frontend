@@ -12,9 +12,8 @@ import "./Search.css";
 import {makeStyles} from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => {
-    //why
     const backgroundColor =
-        theme.palette.mode === 'light' ? theme.palette.grey[300] : theme.palette.grey[700];
+        theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700];
     return({
     searchBar: {
         marginTop: '10px',
