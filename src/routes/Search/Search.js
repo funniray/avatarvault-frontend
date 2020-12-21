@@ -8,8 +8,9 @@ import Rest from "../../Rest";
 import useFetch from "fetch-suspense";
 import CategorySelector from "../../components/CategorySelector";
 
-import "./Search.css";
 import {makeStyles} from "@material-ui/core/styles";
+import {GetApp} from "@material-ui/icons";
+import {Button, Grid, Modal, Paper, Typography} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => {
     const backgroundColor =
@@ -42,8 +43,8 @@ const useStyles = makeStyles((theme) => {
     searchImg: {
         height: '120px',
         width: '120px',
-        margin: '10px',
-        overflow: 'hidden',
+        marginTop: 'auto',
+        marginBottom: 'auto',
         borderRadius: '4px',
     },
     tag: {
@@ -54,11 +55,29 @@ const useStyles = makeStyles((theme) => {
         borderRadius: '16px',
         padding: '2px 8px 2px 8px',
         fontSize: '13px',
+        textTransform: 'none'
     },
     searchResChildren: {
         display: 'inline-block',
         verticalAlign: 'middle',
-    }
+    },
+    downloadButton: {
+        color: theme.palette.text.primary,
+        margin:"auto",
+        textAlign:"right"
+    },
+    paper: {
+        padding: theme.spacing(2),
+        margin: 'auto',
+        marginBottom: '20px',
+        maxHeight: '150px',
+        textAlign: 'left'
+    },
+    modal: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 })});
 
 function SearchResults(props) {
@@ -66,20 +85,51 @@ function SearchResults(props) {
 
     return <>
         <p style={{textAlign:"right", marginRight: "20px"}}>Results: {search.length}</p>
-        {search.map(res=><SearchResult key={res._id} object={res}/>)}
+        {search.map(res=><SearchResult setTags={props.setTags} key={res._id} object={res}/>)}
     </>
 }
 
 function SearchResult(props) {
     let classes = useStyles()
-    return <a className={classes.searchRes} href={props.object.file}>
-        <img className={`${classes.searchImg} ${classes.searchResChildren}`} alt="img" src={props.object.previewImage}/>
-        <div className={classes.searchResChildren}>
-            <p>Name: <b>{props.object.name}</b></p>
-            <p>Size: {(Math.ceil(props.object.fileSize/1048576))+"MB"}</p>
-            <div><p style={{display:"inline-block"}}>Tags: </p>{props.object.tags.map(t=><p className={classes.tag} key={t._id}>{t.name}</p>)}</div>
-        </div>
-    </a>;
+    const [open, setOpen] = React.useState(false);
+
+    let img;
+
+    if (props.object.previewImage) {
+        img = (<div>
+            <Button className={`${classes.searchImg} `} style={{padding:0}} onClick={()=>setOpen(true)}>
+                <img style={{maxWidth:120,maxHeight:120,borderRadius:"4px"}} alt="img" src={props.object.previewImage}/>
+            </Button>
+            <Modal open={open} onClose={()=>setOpen(false)} className={classes.modal}>
+                <img alt="img" style={{maxHeight:"90vh",maxWidth:"90vw"}} src={props.object.previewImage}/>
+            </Modal>
+        </div>)
+    }
+
+    return <Paper className={classes.paper}>
+        <Grid container spacing={2}>
+        <Grid xs item>
+            {img}
+        </Grid>
+        <Grid xs={6} item container direction={"column"} justify={"space-between"}>
+            <Typography>Name: <b>{props.object.name}</b></Typography>
+            <Typography>Size: {(Math.ceil(props.object.fileSize/1048576))+"MB"}</Typography>
+            <Typography>Tags: {props.object.tags.map(t=>
+                <Button
+                    onClick={()=>props.setTags([t.name])}
+                    className={classes.tag}
+                    key={t._id}>
+                        {t.name}
+                </Button>
+            )}</Typography>
+        </Grid>
+        <Grid xs container item button className={`${classes.searchResChildren} ${classes.downloadButton}`}>
+            <Button href={props.object.file}>
+                <GetApp style={{width:"60px",height:"60px", margin:"auto"}}/>
+            </Button>
+        </Grid>
+    </Grid>
+    </Paper>;
 }
 
 function updateValues(t,c,l) {
@@ -105,6 +155,9 @@ export default function Search() {
 
     let [redirPath,updatePath] = useState(location.pathname+location.search)
 
+    let redir;
+    if (redirPath) redir = <Redirect push to={redirPath}/>
+
     return (<>
         <Suspense fallback={<CircularProgress/>}>
             <div className={classes.searchBar}>
@@ -117,9 +170,9 @@ export default function Search() {
             </div>
             <br/>
             <Suspense fallback={<CircularProgress/>}>
-                <SearchResults style={{display:'block'}} tags={tags} category={category}/>
+                <SearchResults style={{display:'block'}} setTags={t=>updatePath(updateValues(t,category,location))} tags={tags} category={category}/>
             </Suspense>
-            <Redirect push to={redirPath}/>
+            {redir}
         </Suspense>
     </>);
 }

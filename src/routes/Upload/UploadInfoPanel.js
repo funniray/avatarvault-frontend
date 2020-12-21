@@ -11,8 +11,8 @@ let queue = [];
 let isQueueRunning = false;
 
 let fileTypes = {
-    files: ['rar','zip','7z','unitypackage','exe','gz','vrca'],
-    previews: ['png','jpg','jpeg','mp4','webm','gif']
+    files: ['rar','zip','7z','unitypackage','exe','gz','vrca','shader','msi'],
+    previews: ['png','jpg','jpeg','gif']
 }
 
 const useStyles = makeStyles((theme) =>{

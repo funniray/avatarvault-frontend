@@ -53,7 +53,7 @@ export default function Sidebar(props) {
             >
                 <List>
                     <ListItem>
-                        <ListItemText primary={"Avatar Vault"} secondary={"By Requi and Snow Kit"} />
+                        <ListItemText primary={"Avatar Vault"} secondary={"By some people"} />
                     </ListItem>
                     <Link className={classes.link} to="/">
                         <ListItem button>
