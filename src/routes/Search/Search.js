@@ -10,12 +10,9 @@ import CategorySelector from "../../components/CategorySelector";
 
 import {makeStyles} from "@material-ui/core/styles";
 import {GetApp} from "@material-ui/icons";
-import {Button, Grid, Modal, Paper, Typography} from "@material-ui/core";
+import {Button, Chip, Grid, Modal, Paper, Typography} from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => {
-    const backgroundColor =
-        theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700];
-    return({
+const useStyles = makeStyles((theme) => ({
     searchBar: {
         marginTop: '10px',
         width: '100%',
@@ -48,21 +45,15 @@ const useStyles = makeStyles((theme) => {
         borderRadius: '4px',
     },
     tag: {
-        display: 'inline-block',
-        marginLeft: '5px',
-        border: '1px solid transparent',
-        backgroundColor: backgroundColor,
-        borderRadius: '16px',
-        padding: '2px 8px 2px 8px',
-        fontSize: '13px',
-        textTransform: 'none'
+        margin: theme.spacing(0.5)
     },
     searchResChildren: {
-        display: 'inline-block',
-        verticalAlign: 'middle',
+
     },
     downloadButton: {
         color: theme.palette.text.primary,
+        display: 'inline-block',
+        verticalAlign: 'middle',
         margin:"auto",
         textAlign:"right"
     },
@@ -78,7 +69,7 @@ const useStyles = makeStyles((theme) => {
         alignItems: 'center',
         justifyContent: 'center',
     },
-})});
+}));
 
 function SearchResults(props) {
     let search = useFetch(Rest.searchObjects(props.category,props.tags));
@@ -115,15 +106,10 @@ function SearchResult(props) {
             <Typography>Name: <b>{props.object.name}</b></Typography>
             <Typography>Size: {(Math.ceil(props.object.fileSize/1048576))+"MB"}</Typography>
             <Typography>Tags: {props.object.tags.map(t=>
-                <Button
-                    onClick={()=>props.setTags([t.name])}
-                    className={classes.tag}
-                    key={t._id}>
-                        {t.name}
-                </Button>
+                <Chip className={classes.tag} label={t.name} onClick={()=>props.setTags([t.name])} key={t._id}/>
             )}</Typography>
         </Grid>
-        <Grid xs container item button className={`${classes.searchResChildren} ${classes.downloadButton}`}>
+        <Grid xs container item button className={classes.downloadButton}>
             <Button href={props.object.file}>
                 <GetApp style={{width:"60px",height:"60px", margin:"auto"}}/>
             </Button>

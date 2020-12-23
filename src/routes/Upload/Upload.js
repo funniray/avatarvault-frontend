@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
     root: {
         width: '100%',
         position: 'relative',
+    },
+    panel: {
+        height: 'auto'
     }
 }));
 
@@ -87,18 +90,19 @@ export default function Upload() {
                     <Tab label="New Upload" {...a11yProps(1)} />
                 </Tabs>
             </AppBar>
-            <SwipeableViews
-                axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                index={value}
-                onChangeIndex={handleChangeIndex}
-            >
-                <TabPanel value={value} index={0} dir={theme.direction}>
-                    <UploadingPanel files={files}/>
-                </TabPanel>
-                <TabPanel value={value} index={1} dir={theme.direction}>
-                    <UploadInfoPanel password={password} files={files} setUploadingFiles={setFiles}/>
-                </TabPanel>
-            </SwipeableViews>
+                <SwipeableViews
+                    axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                    index={value}
+                    onChangeIndex={handleChangeIndex}
+                    style={{height:"85vh"}}
+                >
+                    <TabPanel value={value} index={0} dir={theme.direction}>
+                        <UploadingPanel files={files}/>
+                    </TabPanel>
+                    <TabPanel value={value} index={1} dir={theme.direction}>
+                        <UploadInfoPanel password={password} files={files} setUploadingFiles={setFiles}/>
+                    </TabPanel>
+                </SwipeableViews>
         </div>
     );
 }

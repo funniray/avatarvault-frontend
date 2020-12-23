@@ -3,7 +3,8 @@ import CategorySelector from "../../components/CategorySelector";
 import TagSearchBar from "../../components/TagSearchBar";
 import React, {Suspense, useRef, useState} from "react";
 import {makeStyles} from "@material-ui/core/styles";
-import {Button} from "@material-ui/core";
+import {Button, Grid, Paper} from "@material-ui/core";
+import { DataGrid } from '@material-ui/data-grid';
 import axios from 'axios';
 import {baseurl} from "../../Rest";
 
@@ -19,21 +20,10 @@ const useStyles = makeStyles((theme) =>{
     //Why didn't they just use a palette thing?
     const borderColor = theme.palette.type === 'light' ? 'rgba(0, 0, 0, 0.23)' : 'rgba(255, 255, 255, 0.23)';
     return{
-        catSelector: {
-            width: 'calc(20% - 80px)',
-            display: 'inline-flex',
-            alignItems: 'middle',
-            margin: "10px 10px 10px 20px"
-        },
-        tagSelector: {
-            width: '70%',
-            display: 'inline-block',
-            margin: "10px 20px 10px 10px"
-        },
         dropZone: {
             width: '50%',
-            height: '10vh',
-            border: '1px solid '+borderColor,
+            height: '150px',
+            marginTop:'10px',
             marginLeft: 'auto',
             marginRight: 'auto'
         },
@@ -70,6 +60,9 @@ function sortFiles(files) {
         if (fileTypes.files.includes(split[split.length-1].toLowerCase())){
             split.pop();
             sorted[split.join(".")] = {file: file};
+            if (file.size > 1000000000){
+                sorted[split.join(".")].exception = "Size is over 1GB!"
+            }
             return false;
         }
         return true;
@@ -165,11 +158,18 @@ async function doNextInQueue() {
     await doNextInQueue();
 }
 
+const gridColumns =[
+    {field:'fileName',headerName: 'File Name',width: 150,valueGetter:(props=>props.row.file.name)},
+    {field:'previewName',headerName: 'Preview Name',width: 150,valueGetter:(props=>(props.row.preview || {name:"No Preview"}).name)},
+    {field:'exception',headerName: 'Exceptions',width: 300},
+];
+
 export default function UploadInfoPanel(props) {
     let [category,setCategory] = useState('avatars');
     let [tags, setTags] = useState([]);
     let [files,setFiles] = useState([]);
     let [sorted, unsorted] = sortFiles(files);
+    let [selected,setSelected] = useState([]);
     let catRef = useRef()
     const classes = useStyles();
 
@@ -183,36 +183,39 @@ export default function UploadInfoPanel(props) {
     }
 
     for (let sort in sorted) {
-        grid.push(<tr className={classes.border} key={sort}>
-            <td className={classes.border}>{sorted[sort].file.name}</td>
-            <td className={classes.border}>{(sorted[sort].preview || {name:"no preview"}).name}</td>
-        </tr>)// <td className={classes.border}><Button onClick={()=>upload(category,tags,sorted[sort]).uploadFile()}>Upload</Button></td>
+        sorted[sort].id = sort;
+        grid.push(sorted[sort]);
     }
 
     return (
         <Suspense fallback={<CircularProgress/>}>
-            <div className={classes.catSelector}><CategorySelector ref={catRef} onChange={(e,v)=>setCategory(v)} freeSolo/></div>
-            <div className={classes.tagSelector}><TagSearchBar value={tags} freeSolo onChange={(e,v)=>{setTags(v)}}/></div>
-            <div className={classes.dropZone} onDragOver={e=>{e.stopPropagation();e.preventDefault()}} onDrop={e=>setFiles(dropHandler(e,files))}>
-                Drop files here...
-            </div>
-            <div>
+            <Grid container spacing={2} style={{width:'100%', padding: 10}}>
+                <Grid item container xs={2}>
+                    <CategorySelector style={{width:'100%'}} ref={catRef} onChange={(e,v)=>setCategory(v)} freeSolo/>
+                </Grid>
+                <Grid item xs={10}>
+                    <TagSearchBar style={{width:'100%'}} value={tags} freeSolo onChange={(e,v)=>{setTags(v)}}/>
+                </Grid>
+            </Grid>
+            <p>Drop files below to upload.</p>
+            <div onDragOver={e=>{e.stopPropagation();e.preventDefault()}} onDrop={e=>{setFiles(dropHandler(e,files))}}>
                 {exceptions}
-                <br/>
-                <br/>
-                <br/>
-                <p>These files will be uploaded...</p>
-                <table className={classes.border} style={{margin:"auto"}}>
-                    <thead>
-                        <tr className={classes.border}>
-                            <th className={classes.border}>File</th>
-                            <th className={classes.border}>Preview</th>
-                        </tr>
-                    </thead>
-                    <tbody>{grid}</tbody>
-                </table>
-                <Button onClick={()=>setFiles([])}>Clear</Button>
-                <Button onClick={()=>uploadAll(sorted,category,tags,props.files,props.setUploadingFiles,props.password)}>Upload All Files</Button>
+                <Grid direction={"column"} container>
+                    <Grid item container style={{minHeight:500, width: '100%', margin:10 }}>
+                        <DataGrid rows={grid} columns={gridColumns} checkboxSelection onSelectionChange={e=>setSelected(e.rowIds)} />
+                    </Grid>
+                    <Grid item container spacing={2} style={{width:"100%", margin:10}}>
+                        <Grid item container xs justify={"flex-start"}>
+                            <Button color={"secondary"} variant={"outlined"} onClick={()=>setFiles([])}>Clear</Button>
+                        </Grid>
+                        <Grid item container xs justify={"flex-end"}>
+                            <Button color={"primary"} variant={"outlined"} onClick={()=>{
+                                let toUpload = selected.map(i=>sorted[i]);
+                                uploadAll(toUpload,category,tags,props.files,props.setUploadingFiles,props.password)
+                            }}>Upload Selected Files</Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
             </div>
         </Suspense>)
 }
