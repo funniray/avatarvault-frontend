@@ -7,6 +7,7 @@ import {Button, Grid, Paper} from "@material-ui/core";
 import { DataGrid } from '@material-ui/data-grid';
 import axios from 'axios';
 import {baseurl} from "../../Rest";
+import {useSelector} from "react-redux";
 
 let queue = [];
 let isQueueRunning = false;
@@ -92,13 +93,13 @@ class ObjectUpload {
     downloading = false;
     progress = 0;
 
-    constructor(file,preview,tags,category,password) {
+    constructor(file,preview,tags,category,authentication) {
         this.name=file.name;
+        this.authentication = authentication;
         this.formData = new FormData();
         this.formData.append('file',file);
         this.formData.append('tags',JSON.stringify(tags));
         this.formData.append('category',category);
-        this.formData.append('password',password)
         if (preview) this.formData.append('preview',preview);
     }
 
@@ -119,13 +120,13 @@ class ObjectUpload {
     uploadFile() {
         this.downloading = true;
         let a = axios.create({baseURL:baseurl});
-        this.upload = a.post(`/v1/upload`,this.formData, {headers:{"Content-Type": "multipart/form-data"}, onUploadProgress: (e)=> this.callListeners(e)});
+        this.upload = a.post(`/v1/upload`,this.formData, {headers:{"Content-Type": "multipart/form-data", Authorization: this.authentication}, onUploadProgress: (e)=> this.callListeners(e)});
         this.upload.then(this.finishedListener.forEach(l=>l()));
         return this.upload;
     }
 }
 
-function upload(c,t,files,p) {
+function upload(c,t,files,p,a) {
     return new ObjectUpload(files.file,files.preview,t,c,p)
 }
 
@@ -170,6 +171,8 @@ export default function UploadInfoPanel(props) {
     let [files,setFiles] = useState([]);
     let [sorted, unsorted] = sortFiles(files);
     let [selected,setSelected] = useState([]);
+    const loginState = useSelector(state => state.login);
+
     let catRef = useRef()
     const classes = useStyles();
 
@@ -211,7 +214,7 @@ export default function UploadInfoPanel(props) {
                         <Grid item container xs justify={"flex-end"}>
                             <Button color={"primary"} variant={"outlined"} onClick={()=>{
                                 let toUpload = selected.map(i=>sorted[i]);
-                                uploadAll(toUpload,category,tags,props.files,props.setUploadingFiles,props.password)
+                                uploadAll(toUpload,category,tags,props.files,props.setUploadingFiles,loginState.account.accessToken)
                             }}>Upload Selected Files</Button>
                         </Grid>
                     </Grid>

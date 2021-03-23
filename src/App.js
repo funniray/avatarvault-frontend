@@ -6,12 +6,14 @@ import AppHeader from "./routes/AppHeader/AppHeader";
 import Index from "./routes/Index/Index";
 import Search from "./routes/Search/Search";
 import Upload from "./routes/Upload/Upload";
+import LoginWindow from "./routes/Login/LoginWindow";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import React, {Suspense} from "react";
 import Sidebar from "./components/Sidebar";
+
 
 function App() {
 
@@ -40,6 +42,9 @@ function App() {
                 </Route>
                 <Route path="/upload">
                   <Upload/>
+                </Route>
+                <Route path={"/login"}>
+                  <LoginWindow/>
                 </Route>
                 <Route path="/">
                   <Index/>

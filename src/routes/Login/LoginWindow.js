@@ -6,13 +6,9 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import UploadInfoPanel from "./UploadInfoPanel";
-import UploadingPanel from "./UploadingPanel"
-import useFetch from "fetch-suspense";
-import Rest from "../../Rest";
-import {Button} from "@material-ui/core";
-import {Link} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
+import LoginPanel from "./LoginPanel";
+import {useSelector} from "react-redux";
+import RegisterPanel from "./RegisterPanel";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -40,7 +36,8 @@ function a11yProps(index) {
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: '100%',
+        width: '50%',
+        margin: "0 auto 0 auto",
         position: 'relative',
     },
     panel: {
@@ -48,26 +45,16 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
-export default function Upload() {
+export default function LoginWindow() {
     const classes = useStyles();
     const theme = useTheme();
     const [value, setValue] = React.useState(0);
-    const [files,setFiles] = React.useState([]);
     const loginState = useSelector(state => state.login);
 
-    if (!loginState.loggedIn){
-        return(<React.Fragment>
-            <p>You must be logged in to upload</p>
-            <Link to={"/login"}>
-                <Button color={"primary"} variant={"contained"}>Login</Button>
-            </Link>
-        </React.Fragment>)
-    }
-
-    if (!loginState.account.grants.upload) {
-        return(<React.Fragment>
-            <p>Your account isn't allowed to upload :(</p>
-        </React.Fragment>)
+    if (loginState.loggedIn) {
+        return <React.Fragment>
+            <p>You're already logged in!</p>
+        </React.Fragment>
     }
 
     const handleChange = (event, newValue) => {
@@ -89,23 +76,23 @@ export default function Upload() {
                     variant="fullWidth"
                     aria-label="action tabs example"
                 >
-                    <Tab label="Upload List" {...a11yProps(0)} />
-                    <Tab label="New Upload" {...a11yProps(1)} />
+                    <Tab label="Login" {...a11yProps(0)} />
+                    <Tab label="Register" {...a11yProps(1)} />
                 </Tabs>
             </AppBar>
-                <SwipeableViews
-                    axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
-                    index={value}
-                    onChangeIndex={handleChangeIndex}
-                    style={{height:"85vh"}}
-                >
-                    <TabPanel value={value} index={0} dir={theme.direction}>
-                        <UploadingPanel files={files}/>
-                    </TabPanel>
-                    <TabPanel value={value} index={1} dir={theme.direction}>
-                        <UploadInfoPanel files={files} setUploadingFiles={setFiles}/>
-                    </TabPanel>
-                </SwipeableViews>
+            <SwipeableViews
+                axis={theme.direction === 'rtl' ? 'x-reverse' : 'x'}
+                index={value}
+                onChangeIndex={handleChangeIndex}
+                style={{height:"85vh"}}
+            >
+                <TabPanel value={value} index={0} dir={theme.direction}>
+                    <LoginPanel/>
+                </TabPanel>
+                <TabPanel value={value} index={1} dir={theme.direction}>
+                    <RegisterPanel/>
+                </TabPanel>
+            </SwipeableViews>
         </div>
     );
 }

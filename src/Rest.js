@@ -1,4 +1,4 @@
-export const baseurl = window.location.href.includes("localhost")?`http://localhost:3010`:'https://api.vault.requi.dev';
+export const baseurl = window.location.href.includes("localhost")?`http://localhost:3000`:'https://api.vault.requi.dev';
 
 
 function getCategories(){
@@ -33,8 +33,12 @@ function login() {
     return `${baseurl}/v1/user/login`
 }
 
-function register() {
-    return `${baseurl}/v1/user/create`
+function logout() {
+    return `${baseurl}/v1/user/logout`
 }
 
-export default {getCategories,getTags,searchObjects,canUpload,checkPass,baseurl}
+function register() {
+    return `${baseurl}/v1/user/register`
+}
+
+export default {getCategories,getTags,searchObjects,canUpload,checkPass,login,register,logout,baseurl}

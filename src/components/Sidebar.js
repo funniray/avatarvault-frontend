@@ -5,8 +5,11 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import {Home, Publish, Search} from "@material-ui/icons";
 import {Link} from "react-router-dom";
+import {useSelector} from "react-redux";
+import {Grid} from "@material-ui/core";
 
 const drawerWidth = 240;
 
@@ -38,6 +41,15 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+function GrantSpecificItem(props) {
+    const loginState = useSelector(state => state.login);
+    if (loginState.account.grants[props.grant]) {
+        return props.children;
+    }
+
+    return <React.Fragment/>
+}
+
 export default function Sidebar(props) {
     const classes = useStyles();
 
@@ -67,10 +79,18 @@ export default function Sidebar(props) {
                             <ListItemText primary="Search" />
                         </ListItem>
                     </Link>
-                    <Link className={classes.link} to="/upload">
+                    <GrantSpecificItem grant={"upload"}>
+                        <Link className={classes.link} to="/upload">
+                            <ListItem button>
+                                <ListItemIcon><Publish/></ListItemIcon>
+                                <ListItemText primary="Upload" />
+                            </ListItem>
+                        </Link>
+                    </GrantSpecificItem>
+                    <Link className={classes.link} to="/login">
                         <ListItem button>
-                            <ListItemIcon><Publish/></ListItemIcon>
-                            <ListItemText primary="Upload" />
+                            <ListItemIcon><AccountCircleIcon/></ListItemIcon>
+                            <ListItemText primary="Account" />
                         </ListItem>
                     </Link>
                 </List>
